@@ -1,0 +1,9 @@
+{
+  "name": "soopsocks",
+  "ecosystem": "pypi",
+  "status": "malicious",
+  "first_observed": "2025-09-01",
+  "intended_target": null,
+  "did_you_mean": ["pysocks"],
+  "evidence_url": "https://thehackernews.com/2025/10/alert-malicious-pypi-package-soopsocks.html"
+}

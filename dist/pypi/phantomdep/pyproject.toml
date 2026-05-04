@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phantomdep"
+version = "1.0.0"
+description = "Local-first dependency firewall for AI coding agents. Catches hallucinated, squatted, and malicious packages before they reach your repo."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+authors = [{ name = "Open Intelligence Labs" }]
+keywords = ["security", "supply-chain", "ai", "slopsquatting", "dependency", "phantom"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/openintelligence-labs/phantomdep"
+Source   = "https://github.com/openintelligence-labs/phantomdep"
+Issues   = "https://github.com/openintelligence-labs/phantomdep/issues"
+
+[project.scripts]
+phantomdep = "phantomdep.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+phantomdep = ["bin/*"]

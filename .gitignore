@@ -1,37 +1,55 @@
-# architecture docs (uncooked — kept local until polished)
-docs/
-
-# Claude Code config (local-only)
-.claude/
-
-# CLAUDE.md (uncooked — kept local until polished)
-CLAUDE.md
-
+# Build artefacts
+target/
+*.egg-info/
+build/
+.eggs/
+wheels/
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# Python virtualenvs
 .Python
-build/
-dist/
-*.egg-info/
-.eggs/
-wheels/
 .venv/
 venv/
 env/
 .env
 .env.local
+
+# Test caches
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
 .coverage
 htmlcov/
+
+# Editor / OS junk
 .DS_Store
 .idea/
 .vscode/
+.claude/
 *.log
+
+# PhantomDep runtime data (not source-of-truth)
 *.sqlite
 *.db
 *.duckdb
-.claude/settings.local.json
+
+# VS Code extension build outputs (the source TypeScript is committed)
+extensions/vscode/out/
+extensions/vscode/node_modules/
+
+# Phantom-DB pipeline outputs (regenerated nightly by CI)
+phantom-db/pipelines/candidates/
+phantom-db/reports/
+
+# Pre-Rust prototype (kept on disk for reference, not shipped)
+_archive/
+
+# Internal architecture + benchmark docs (kept local until the public docs site is up)
+docs/
+
+# Local-only contributor notes
+*.local.md
+NOTES.md

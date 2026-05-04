@@ -1,0 +1,41 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/phantomdep-core",
+    "crates/phantomdep-cli",
+]
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.80"
+license = "MIT"
+repository = "https://github.com/openintelligence-labs/phantomdep"
+homepage = "https://github.com/openintelligence-labs/phantomdep"
+authors = ["Open Intelligence Labs"]
+
+[workspace.dependencies]
+phantomdep-core = { path = "crates/phantomdep-core", version = "1.0.0" }
+
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "fs", "time", "sync", "io-std", "io-util"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "gzip"] }
+clap = { version = "4", features = ["derive", "env"] }
+time = { version = "0.3", features = ["serde", "formatting", "parsing", "macros"] }
+strsim = "0.11"
+rusqlite = { version = "0.32", features = ["bundled"] }
+ignore = "0.4"
+walkdir = "2"
+regex = "1"
+once_cell = "1"
+dirs = "5"
+futures = "0.3"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"

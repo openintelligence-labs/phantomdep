@@ -1,0 +1,20 @@
+{
+  "did_you_mean": [
+    "huggingface_hub",
+    "huggingface-hub"
+  ],
+  "ecosystem": "pypi",
+  "evidence_url": "https://www.lasso.security/blog/ai-package-hallucinations",
+  "first_observed": "2024-02-13",
+  "intended_target": "huggingface_hub[cli]",
+  "name": "huggingface-cli",
+  "status": "phantom",
+  "status_log": [
+    {
+      "date": "2026-05-04",
+      "from": "squatted",
+      "reason": "registry returns 404 \u2014 squatter takedown or removal",
+      "to": "phantom"
+    }
+  ]
+}

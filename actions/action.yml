@@ -1,0 +1,145 @@
+name: PhantomDep
+description: Local-first dependency firewall for AI coding agents. Catches hallucinated, squatted, and malicious packages before they reach your repo.
+author: Open Intelligence Labs
+branding:
+  icon: shield
+  color: purple
+
+inputs:
+  path:
+    description: Path to scan (defaults to repository root).
+    required: false
+    default: "."
+  fail-on:
+    description: Minimum action that fails the job. One of `block`, `warn`, `never`.
+    required: false
+    default: block
+  format:
+    description: Output format. One of `sarif`, `markdown`, `json`, `terminal`.
+    required: false
+    default: sarif
+  upload-sarif:
+    description: Upload the SARIF result to GitHub Code Scanning.
+    required: false
+    default: "true"
+  comment-on-pr:
+    description: Post a markdown PR comment with the findings (PR events only).
+    required: false
+    default: "true"
+  version:
+    description: Version of the phantomdep binary to install (e.g. `v0.2.0`). Defaults to latest release.
+    required: false
+    default: latest
+  concurrency:
+    description: Maximum concurrent registry lookups.
+    required: false
+    default: "16"
+
+outputs:
+  sarif-path:
+    description: Path to the generated SARIF file.
+    value: ${{ steps.scan.outputs.sarif-path }}
+  worst-action:
+    description: Worst action across all findings (`allow`, `warn`, `block`).
+    value: ${{ steps.scan.outputs.worst-action }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install phantomdep
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        os="$(uname -s)"
+        arch="$(uname -m)"
+        case "$os/$arch" in
+          Linux/x86_64)   asset="phantomdep-x86_64-unknown-linux-gnu.tar.gz" ;;
+          Linux/aarch64)  asset="phantomdep-aarch64-unknown-linux-gnu.tar.gz" ;;
+          Darwin/x86_64)  asset="phantomdep-x86_64-apple-darwin.tar.gz" ;;
+          Darwin/arm64)   asset="phantomdep-aarch64-apple-darwin.tar.gz" ;;
+          *) echo "unsupported runner os/arch: $os/$arch" >&2; exit 1 ;;
+        esac
+        if [ "$VERSION" = "latest" ]; then
+          tag="$(curl -sSfL https://api.github.com/repos/openintelligence-labs/phantomdep/releases/latest | grep -o '"tag_name": "[^"]*' | head -1 | cut -d'"' -f4)"
+        else
+          tag="$VERSION"
+        fi
+        if [ -z "$tag" ]; then
+          echo "could not resolve phantomdep release tag" >&2
+          exit 1
+        fi
+        url="https://github.com/openintelligence-labs/phantomdep/releases/download/$tag/$asset"
+        echo "Downloading $url"
+        tmpdir="$(mktemp -d)"
+        curl -sSfL "$url" -o "$tmpdir/asset.tar.gz"
+        tar -C "$tmpdir" -xzf "$tmpdir/asset.tar.gz"
+        sudo install -m 0755 "$tmpdir/phantomdep" /usr/local/bin/phantomdep
+        phantomdep --version
+
+    - name: Scan repository
+      id: scan
+      shell: bash
+      env:
+        PD_PATH: ${{ inputs.path }}
+        PD_FORMAT: ${{ inputs.format }}
+        PD_FAIL_ON: ${{ inputs.fail-on }}
+        PD_CONCURRENCY: ${{ inputs.concurrency }}
+      run: |
+        set -uo pipefail
+        sarif_path="${RUNNER_TEMP:-/tmp}/phantomdep.sarif"
+        markdown_path="${RUNNER_TEMP:-/tmp}/phantomdep.md"
+
+        # Always produce SARIF for code scanning.
+        phantomdep scan "$PD_PATH" --format sarif --concurrency "$PD_CONCURRENCY" > "$sarif_path"
+        sarif_exit=$?
+
+        # And markdown for PR comments.
+        phantomdep scan "$PD_PATH" --format markdown --concurrency "$PD_CONCURRENCY" > "$markdown_path" || true
+
+        echo "sarif-path=$sarif_path" >> "$GITHUB_OUTPUT"
+        echo "markdown-path=$markdown_path" >> "$GITHUB_OUTPUT"
+        case "$sarif_exit" in
+          0) echo "worst-action=allow" >> "$GITHUB_OUTPUT" ;;
+          1) echo "worst-action=warn"  >> "$GITHUB_OUTPUT" ;;
+          *) echo "worst-action=block" >> "$GITHUB_OUTPUT" ;;
+        esac
+
+        case "$PD_FAIL_ON" in
+          block)
+            if [ "$sarif_exit" -ge 2 ]; then exit 1; fi ;;
+          warn)
+            if [ "$sarif_exit" -ge 1 ]; then exit 1; fi ;;
+          never) ;;
+          *)
+            echo "unknown fail-on value: $PD_FAIL_ON" >&2; exit 1 ;;
+        esac
+
+    - name: Upload SARIF to Code Scanning
+      if: always() && inputs.upload-sarif == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif-path }}
+        category: phantomdep
+
+    - name: Comment on PR
+      if: always() && inputs.comment-on-pr == 'true' && github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const body = fs.readFileSync('${{ steps.scan.outputs.markdown-path }}', 'utf8');
+          const { owner, repo } = context.repo;
+          const issue_number = context.issue.number;
+          const marker = '<!-- phantomdep-comment -->';
+          const fullBody = marker + '\n' + body;
+
+          // Find an existing PhantomDep comment to update.
+          const comments = await github.rest.issues.listComments({ owner, repo, issue_number });
+          const existing = comments.data.find(c => c.body && c.body.startsWith(marker));
+          if (existing) {
+            await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: fullBody });
+          } else {
+            await github.rest.issues.createComment({ owner, repo, issue_number, body: fullBody });
+          }
