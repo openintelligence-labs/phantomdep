@@ -1,0 +1,9 @@
+{
+  "name": "ccxt-mexc-futures",
+  "ecosystem": "pypi",
+  "status": "malicious",
+  "first_observed": "2025-04-01",
+  "intended_target": "ccxt",
+  "did_you_mean": ["ccxt"],
+  "evidence_url": "https://thehackernews.com/2025/04/malicious-pypi-package-targets-mexc.html"
+}

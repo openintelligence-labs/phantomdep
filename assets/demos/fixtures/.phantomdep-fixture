@@ -1,0 +1,2 @@
+This directory is a fixture for the demo recording scripts. Do not import it
+into the build; it intentionally contains hallucinated package names.
