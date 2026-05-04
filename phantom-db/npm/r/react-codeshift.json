@@ -1,0 +1,9 @@
+{
+  "name": "react-codeshift",
+  "ecosystem": "npm",
+  "status": "squatted",
+  "first_observed": "2026-01-01",
+  "intended_target": "jscodeshift",
+  "did_you_mean": ["jscodeshift", "react-codemod"],
+  "evidence_url": "https://thehackernews.com/2025/08/malicious-pypi-and-npm-packages.html"
+}

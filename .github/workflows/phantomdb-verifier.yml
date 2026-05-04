@@ -1,0 +1,58 @@
+name: Phantom-DB verifier
+
+on:
+  schedule:
+    # Hourly. Auto-promotes phantom → squatted on registration.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "phantom-db/**/*.json"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install pipelines
+        working-directory: phantom-db/pipelines
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+
+      - name: Run verifier
+        id: verify
+        working-directory: phantom-db/pipelines
+        run: |
+          mkdir -p ../reports
+          phantomdep-verifier \
+            --db ../ \
+            --report ../reports/verifier-$(date -u +%Y-%m-%d-%H).json
+          # If files changed, the next step commits them.
+          echo "diff_count=$(git -C ../ diff --name-only | wc -l | tr -d ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Commit promotions
+        if: github.event_name == 'schedule' && steps.verify.outputs.diff_count != '0'
+        run: |
+          git config user.name "phantomdep-verifier[bot]"
+          git config user.email "phantomdep-verifier@users.noreply.github.com"
+          git add phantom-db/
+          git commit -m "phantom-db: hourly verifier promotions
+
+          Auto-generated status transitions from the verifier bot."
+          git push
+
+      - name: Lint mode (PRs)
+        if: github.event_name == 'pull_request'
+        working-directory: phantom-db/pipelines
+        run: phantomdep-verifier --db ../ --check-only

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="20" fill="#1a1530"/>
+  <!-- Shield body -->
+  <path d="M64 18 L98 30 L98 70 Q98 96 64 110 Q30 96 30 70 L30 30 Z"
+        fill="#7c3aed" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Phantom 'P' with hint of an import bracket -->
+  <text x="64" y="80" text-anchor="middle"
+        font-family="Verdana, Geneva, sans-serif"
+        font-weight="bold" font-size="58" fill="#fff">P</text>
+  <!-- Small ghost dot above to hint at "phantom" -->
+  <circle cx="64" cy="36" r="5" fill="#fff" opacity="0.85"/>
+</svg>
