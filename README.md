@@ -34,7 +34,7 @@ curl -sSfL https://github.com/openintelligence-labs/phantomdep/releases/latest/d
     | tar -xz && sudo install phantomdep /usr/local/bin/
 ```
 
-`brew install`, `npm install -g`, and `pip install` land alongside the v1.0 launch — see [LAUNCH.md](./LAUNCH.md).
+`brew install`, `npm install -g`, and `pip install` land alongside the v1.0 release.
 
 No Python or Node runtime required, no signup, no telemetry. The binary works offline against a bundled snapshot.
 

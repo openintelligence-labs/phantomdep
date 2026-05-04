@@ -15,7 +15,7 @@ First public release.
 - VS Code extension icon (`extensions/vscode/icon.png`).
 - Distribution channel skeletons: `dist/homebrew/phantomdep.rb`, `dist/npm/`, `dist/pypi/phantomdep/`.
 - `Makefile` with `build`, `test`, `bench`, `demo`, `demo-render`, `clean` targets.
-- `CONTRIBUTING.md`, `SECURITY.md`, `LAUNCH.md`.
+- `CONTRIBUTING.md`, `SECURITY.md`.
 
 ### Changed
 - All workspace versions bumped from 0.x → **1.0.0**.
