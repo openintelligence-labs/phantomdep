@@ -16,22 +16,22 @@ class Phantomdep < Formula
   on_macos do
     on_arm do
       url "https://github.com/openintelligence-labs/phantomdep/releases/download/v#{version}/phantomdep-aarch64-apple-darwin.tar.gz"
-      sha256 "REPLACE_WITH_AARCH64_DARWIN_SHA256"
+      sha256 "f8d4212b2393b69efb63b749e674ae2042722b794c2defb0122407cb99f59821"
     end
     on_intel do
       url "https://github.com/openintelligence-labs/phantomdep/releases/download/v#{version}/phantomdep-x86_64-apple-darwin.tar.gz"
-      sha256 "REPLACE_WITH_X86_64_DARWIN_SHA256"
+      sha256 "cfec8f19eea7d9ffa4d877c65a0e82bf184964c8102a59d6d6f87d4d98041896"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/openintelligence-labs/phantomdep/releases/download/v#{version}/phantomdep-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "REPLACE_WITH_AARCH64_LINUX_SHA256"
+      sha256 "982121c01f6b99f7f9b07071ca78e51fd80a3f553adeaa816e7f51ebfc1384f9"
     end
     on_intel do
       url "https://github.com/openintelligence-labs/phantomdep/releases/download/v#{version}/phantomdep-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "REPLACE_WITH_X86_64_LINUX_SHA256"
+      sha256 "d393bc850c9310e903303f2699d9c4f8edd24b1cc0171d69451400a59d26a9d6"
     end
   end
 

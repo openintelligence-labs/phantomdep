@@ -29,11 +29,13 @@ git push origin v1.0.0
 Pushing a `v*.*.*` tag triggers `.github/workflows/release.yml`, which
 matrix-builds 5 targets (linux x86_64/aarch64, macOS x86_64/aarch64,
 windows x86_64), generates `.sha256` files, and publishes/updates the GitHub
-Release with all assets. If the workflow ever fails, the manual fallback is:
+Release with all assets. CI archives contain only the `phantomdep` binary.
+Re-dispatch manually with `gh workflow run release.yml -f tag=vX.Y.Z`.
+If the workflow ever fails, the manual fallback is:
 
 ```sh
-mkdir -p /tmp/stage && cp target/release/phantomdep README.md LICENSE /tmp/stage/
-tar -C /tmp/stage -czf phantomdep-aarch64-apple-darwin.tar.gz phantomdep README.md LICENSE
+mkdir -p /tmp/stage && cp target/release/phantomdep /tmp/stage/
+tar -C /tmp/stage -czf phantomdep-aarch64-apple-darwin.tar.gz phantomdep
 gh release create v1.0.0 --title "PhantomDep v1.0.0" \
   --notes-file <(sed -n '/^## \[1.0.0\]/,/^## \[/p' CHANGELOG.md) \
   phantomdep-aarch64-apple-darwin.tar.gz

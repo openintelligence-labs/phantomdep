@@ -125,16 +125,19 @@ jobs:
           fi
 
       - name: Download all artifacts
+        # NOTE: must not land in ./dist — the checkout already has repo
+        # distribution templates there, and they would be globbed into the
+        # release assets (happened on the first v1.0.0 run).
         uses: actions/download-artifact@v4
         with:
-          path: dist
+          path: release-assets
 
-      - name: Flatten dist
+      - name: Flatten release-assets
         run: |
           set -euo pipefail
-          find dist -mindepth 2 -type f -exec mv {} dist/ \;
-          find dist -type d -empty -delete
-          ls -la dist
+          find release-assets -mindepth 2 -type f -exec mv {} release-assets/ \;
+          find release-assets -type d -empty -delete
+          ls -la release-assets
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
@@ -143,4 +146,4 @@ jobs:
           name: PhantomDep ${{ steps.tag.outputs.tag }}
           generate_release_notes: true
           files: |
-            dist/*
+            release-assets/*
