@@ -47,8 +47,10 @@ phantom-db/reports/
 # Pre-Rust prototype (kept on disk for reference, not shipped)
 _archive/
 
-# Internal architecture + benchmark docs (kept local until the public docs site is up)
-docs/
+# Internal architecture + benchmark docs (kept local until the public docs site is up).
+# docs/RELEASING.md is the exception: the release runbook is tracked.
+docs/*
+!docs/RELEASING.md
 
 # Local-only contributor notes
 *.local.md
