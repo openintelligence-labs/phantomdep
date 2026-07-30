@@ -5,5 +5,6 @@
   "first_observed": "2026-01-01",
   "intended_target": "jscodeshift",
   "did_you_mean": ["jscodeshift", "react-codemod"],
-  "evidence_url": "https://thehackernews.com/2025/08/malicious-pypi-and-npm-packages.html"
+  "evidence_url": "https://www.aikido.dev/blog/slopsquatting-ai-package-hallucination-attacks",
+  "notes": "Hallucinated conflation of jscodeshift + react-codemod, spread via LLM-generated agent skill files across 237 repos; name registered defensively by the reporting researcher (Charlie Eriksen, Aikido) before an attacker could claim it. Installing it is still always wrong."
 }

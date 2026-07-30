@@ -16,6 +16,8 @@ Each entry is a single JSON file at `phantom-db/<ecosystem>/<first-letter>/<name
 | `did_you_mean` | array of string | no | Suggested safe replacements, ordered by confidence |
 | `evidence_url` | string | no | Public link to research/news/CVE that documents this entry |
 | `models_observed` | array of object | no | `{model, rate, runs}` from probe data |
+| `status_log` | array of object | no | `{date, from, to, reason}` transitions appended by the verifier; never hand-edit |
+| `notes` | string | no | Free-text context (e.g. defensive registration by a researcher) |
 
 ## Example
 
