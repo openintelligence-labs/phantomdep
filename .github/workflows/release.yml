@@ -147,3 +147,83 @@ jobs:
           generate_release_notes: true
           files: |
             release-assets/*
+
+  publish-pypi:
+    # Wraps each platform binary in a platform-tagged wheel (the PyPI package
+    # is a thin exec-the-binary wrapper, see dist/pypi/) and publishes via
+    # trusted publishing — no tokens (publisher: this repo / release.yml / pypi).
+    name: Publish PyPI wrapper
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/phantomdep
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve tag
+        id: tag
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries
+
+      - name: Build sdist + platform wheels
+        shell: bash
+        run: |
+          set -euo pipefail
+          pip install --quiet build wheel
+          VERSION="${TAG#v}"
+          WRAP=dist/pypi/phantomdep
+          sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" "$WRAP/pyproject.toml"
+          sed -i "s/^__version__ = \".*\"/__version__ = \"${VERSION}\"/" "$WRAP/src/phantomdep/__init__.py"
+          mkdir -p wheelhouse
+          # sdist ships no binary: built-from-source installs get the CLI stub
+          # that points at the release channels.
+          (cd "$WRAP" && python -m build --sdist --outdir "$GITHUB_WORKSPACE/wheelhouse")
+          declare -A TAGMAP=(
+            [x86_64-unknown-linux-gnu]=manylinux_2_39_x86_64
+            [aarch64-unknown-linux-gnu]=manylinux_2_17_aarch64
+            [x86_64-apple-darwin]=macosx_10_12_x86_64
+            [aarch64-apple-darwin]=macosx_11_0_arm64
+            [x86_64-pc-windows-msvc]=win_amd64
+          )
+          for target in "${!TAGMAP[@]}"; do
+            bindir="$WRAP/src/phantomdep/bin"
+            rm -rf "$bindir" && mkdir -p "$bindir"
+            art="binaries/phantomdep-${target}"
+            if compgen -G "$art/*.tar.gz" > /dev/null; then
+              tar -xzf "$art"/phantomdep-*.tar.gz -C "$bindir"
+              chmod +x "$bindir/phantomdep"
+            else
+              unzip -q "$art"/phantomdep-*.zip -d "$bindir"
+            fi
+            rm -rf "$WRAP/build" "$WRAP"/*.egg-info /tmp/wheelbuild
+            (cd "$WRAP" && python -m build --wheel --outdir /tmp/wheelbuild)
+            python -m wheel tags --platform-tag "${TAGMAP[$target]}" --remove /tmp/wheelbuild/phantomdep-*-py3-none-any.whl
+            mv /tmp/wheelbuild/*.whl wheelhouse/
+          done
+          rm -rf "$WRAP/src/phantomdep/bin"
+          ls -la wheelhouse
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse
