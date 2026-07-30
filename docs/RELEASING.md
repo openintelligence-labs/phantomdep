@@ -132,7 +132,14 @@ pip install phantomdep && phantomdep --version
 For real per-platform wheels, run the build inside the release matrix (one
 wheel per target with the right `--plat-name`) rather than on one machine.
 
-## 6. BLOCKED — crates.io (needs `cargo login` token)
+## 6. crates.io — AUTOMATED via trusted publishing
+
+Both `phantomdep-core` and `phantomdep` publish automatically on tag push:
+the `publish-crates` job in release.yml uses crates.io trusted publishing
+(configured on both crates: this repo / release.yml / `crates` environment —
+no tokens). v1.0.1 was the manual bootstrap publish.
+
+Manual fallback (requires `cargo login` as an owner):
 
 ```sh
 cargo publish -p phantomdep-core --dry-run

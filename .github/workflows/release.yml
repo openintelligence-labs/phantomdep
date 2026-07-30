@@ -227,3 +227,27 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: wheelhouse
+
+  publish-crates:
+    # Publishes phantomdep-core then phantomdep to crates.io via trusted
+    # publishing (both crates trust this repo / release.yml / crates env).
+    name: Publish crates.io
+    needs: build
+    runs-on: ubuntu-latest
+    environment: crates
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+      - name: Publish phantomdep-core
+        run: cargo publish -p phantomdep-core --locked
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+      - name: Publish phantomdep
+        run: cargo publish -p phantomdep --locked
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
