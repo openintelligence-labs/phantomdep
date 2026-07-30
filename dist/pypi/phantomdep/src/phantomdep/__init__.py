@@ -7,4 +7,4 @@ phantomdep` works for the Python audience without requiring Rust.
 For the full docs see https://github.com/openintelligence-labs/phantomdep.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"

@@ -2,6 +2,11 @@
 
 All notable changes to PhantomDep are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [SemVer](https://semver.org/).
 
+## [1.0.1] — 2026-07-30
+
+### Fixed
+- `phantomdep scan` now treats dependency manifests as first-class scan inputs: directory scans (and single-file scans) pick up `requirements.txt`, `constraints.txt`, `requirements-*.txt` / `*-requirements.txt`, and `pyproject.toml` in addition to `Cargo.toml` and `go.mod`. A directory containing only a manifest previously reported "Scanned 0 files" and missed phantom packages declared there. Closes [#2](https://github.com/openintelligence-labs/phantomdep/issues/2).
+
 ## [1.0.0] — 2026-05-04
 
 First public release.

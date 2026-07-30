@@ -16,6 +16,8 @@ use crate::jsimports::extract_npm_packages;
 use crate::lookup::Lookup;
 use crate::phantom_db::PhantomDb;
 use crate::pyimports::extract_pypi_packages;
+use crate::pyproject::extract_pyproject_deps;
+use crate::requirements::extract_requirements;
 use crate::resolve::Resolver;
 use crate::verdict::{Action, Ecosystem, Verdict};
 
@@ -128,7 +130,12 @@ pub async fn scan_path(
 
     while let Some((ecosystem, pkg, files, record)) = tasks.next().await {
         if let Some(((next_ecosystem, next_pkg), next_files)) = iter.next() {
-            tasks.push(spawn(next_ecosystem, next_pkg, next_files, Arc::clone(&lookup)));
+            tasks.push(spawn(
+                next_ecosystem,
+                next_pkg,
+                next_files,
+                Arc::clone(&lookup),
+            ));
         }
 
         let bundle = match record {
@@ -196,6 +203,8 @@ struct CollectedImports {
 enum ParseStrategy {
     PyImports,
     JsImports,
+    Requirements,
+    Pyproject,
     CargoToml,
     GoMod,
     GoImports,
@@ -204,7 +213,7 @@ enum ParseStrategy {
 impl ParseStrategy {
     fn ecosystem(&self) -> Ecosystem {
         match self {
-            Self::PyImports => Ecosystem::Pypi,
+            Self::PyImports | Self::Requirements | Self::Pyproject => Ecosystem::Pypi,
             Self::JsImports => Ecosystem::Npm,
             Self::CargoToml => Ecosystem::Cargo,
             Self::GoMod | Self::GoImports => Ecosystem::Go,
@@ -215,11 +224,24 @@ impl ParseStrategy {
         match self {
             Self::PyImports => extract_pypi_packages(source).into_iter().collect(),
             Self::JsImports => extract_npm_packages(source).into_iter().collect(),
+            Self::Requirements => extract_requirements(source).into_iter().collect(),
+            Self::Pyproject => extract_pyproject_deps(source).into_iter().collect(),
             Self::CargoToml => extract_cargo_deps(source).into_iter().collect(),
             Self::GoMod => extract_gomod_requires(source).into_iter().collect(),
             Self::GoImports => extract_go_imports(source).into_iter().collect(),
         }
     }
+}
+
+/// pip-style requirements files: `requirements.txt`, `constraints.txt`, plus
+/// the common variants `requirements-dev.txt` / `dev-requirements.txt`.
+fn is_requirements_file(file_name: &str) -> bool {
+    if !file_name.ends_with(".txt") {
+        return false;
+    }
+    file_name == "constraints.txt"
+        || file_name.starts_with("requirements")
+        || file_name.ends_with("requirements.txt")
 }
 
 fn strategy_for_path(path: &Path) -> Option<ParseStrategy> {
@@ -230,10 +252,18 @@ fn strategy_for_path(path: &Path) -> Option<ParseStrategy> {
     if file_name == "go.mod" {
         return Some(ParseStrategy::GoMod);
     }
+    if file_name == "pyproject.toml" {
+        return Some(ParseStrategy::Pyproject);
+    }
+    if is_requirements_file(file_name) {
+        return Some(ParseStrategy::Requirements);
+    }
     let ext = path.extension()?.to_str()?;
     match ext {
         "py" | "pyi" => Some(ParseStrategy::PyImports),
-        "js" | "jsx" | "mjs" | "cjs" | "ts" | "tsx" | "mts" | "cts" => Some(ParseStrategy::JsImports),
+        "js" | "jsx" | "mjs" | "cjs" | "ts" | "tsx" | "mts" | "cts" => {
+            Some(ParseStrategy::JsImports)
+        }
         "go" => Some(ParseStrategy::GoImports),
         _ => None,
     }
@@ -294,7 +324,11 @@ mod tests {
                 .unwrap_or(0)
         ));
         fs::create_dir_all(&dir).unwrap();
-        fs::write(dir.join("a.py"), "import requests\nfrom yaml import safe_load\n").unwrap();
+        fs::write(
+            dir.join("a.py"),
+            "import requests\nfrom yaml import safe_load\n",
+        )
+        .unwrap();
         fs::write(
             dir.join("b.ts"),
             "import React from 'react';\nimport { z } from 'zod';\n",
@@ -322,6 +356,85 @@ mod tests {
         assert!(imports
             .by_package
             .contains_key(&(Ecosystem::Npm, "@anthropic-ai/sdk".into())));
+    }
+
+    fn write_manifest_only_project() -> PathBuf {
+        let mut dir = std::env::temp_dir();
+        dir.push(format!(
+            "phantomdep-manifestscantest-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0)
+        ));
+        fs::create_dir_all(&dir).unwrap();
+        fs::write(
+            dir.join("requirements.txt"),
+            "requests\nlangchain_vectorstore_utils_pro==1.0\n",
+        )
+        .unwrap();
+        fs::write(
+            dir.join("pyproject.toml"),
+            "[project]\nname = \"x\"\ndependencies = [\"fastapi>=0.110\"]\n",
+        )
+        .unwrap();
+        dir
+    }
+
+    // Regression test for issue #2: a directory containing only manifests must
+    // still be scanned — manifests are first-class scan inputs.
+    #[test]
+    fn collects_packages_from_manifest_only_directory() {
+        let dir = write_manifest_only_project();
+        let imports = collect_imports(&dir).unwrap();
+        assert_eq!(imports.files_scanned, 2);
+        assert!(imports
+            .by_package
+            .contains_key(&(Ecosystem::Pypi, "requests".into())));
+        assert!(imports
+            .by_package
+            .contains_key(&(Ecosystem::Pypi, "langchain_vectorstore_utils_pro".into())));
+        assert!(imports
+            .by_package
+            .contains_key(&(Ecosystem::Pypi, "fastapi".into())));
+    }
+
+    // Single-file scans of a manifest must work too: `phantomdep scan requirements.txt`.
+    #[test]
+    fn collects_packages_from_single_manifest_file() {
+        let dir = write_manifest_only_project();
+        let imports = collect_imports(&dir.join("requirements.txt")).unwrap();
+        assert_eq!(imports.files_scanned, 1);
+        assert!(imports
+            .by_package
+            .contains_key(&(Ecosystem::Pypi, "langchain_vectorstore_utils_pro".into())));
+    }
+
+    #[test]
+    fn strategy_recognizes_manifest_names() {
+        assert!(matches!(
+            strategy_for_path(Path::new("a/requirements.txt")),
+            Some(ParseStrategy::Requirements)
+        ));
+        assert!(matches!(
+            strategy_for_path(Path::new("requirements-dev.txt")),
+            Some(ParseStrategy::Requirements)
+        ));
+        assert!(matches!(
+            strategy_for_path(Path::new("dev-requirements.txt")),
+            Some(ParseStrategy::Requirements)
+        ));
+        assert!(matches!(
+            strategy_for_path(Path::new("constraints.txt")),
+            Some(ParseStrategy::Requirements)
+        ));
+        assert!(matches!(
+            strategy_for_path(Path::new("pyproject.toml")),
+            Some(ParseStrategy::Pyproject)
+        ));
+        // Arbitrary text files are still not scan inputs.
+        assert!(strategy_for_path(Path::new("notes.txt")).is_none());
+        assert!(strategy_for_path(Path::new("README.md")).is_none());
     }
 
     #[test]

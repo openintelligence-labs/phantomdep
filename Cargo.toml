@@ -6,7 +6,7 @@ members = [
 ]
 
 [workspace.package]
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 rust-version = "1.80"
 license = "MIT"
@@ -15,7 +15,7 @@ homepage = "https://github.com/openintelligence-labs/phantomdep"
 authors = ["Open Intelligence Labs"]
 
 [workspace.dependencies]
-phantomdep-core = { path = "crates/phantomdep-core", version = "1.0.0" }
+phantomdep-core = { path = "crates/phantomdep-core", version = "1.0.1" }
 
 anyhow = "1"
 thiserror = "2"
