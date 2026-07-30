@@ -1,0 +1,50 @@
+name: Bug report
+description: A wrong verdict, crash, or misbehavior in phantomdep.
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: phantomdep --version
+      placeholder: phantomdep 1.0.1
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS / arch
+      placeholder: macOS 15.5 arm64, Ubuntu 24.04 x86_64, ...
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command
+      description: The full command line you ran (check, scan, wrap, hook, mcp, lsp, ...).
+      render: shell
+      placeholder: phantomdep check huggingface-cli --ecosystem pypi
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Verdict / output
+      description: Paste the complete output, including the evidence lines. Add `--no-cache` on a second run if you suspect a stale cache entry.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What verdict or behavior you expected, and why (registry links welcome).
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: phantomdep doctor output
+      description: Output of `phantomdep doctor`. Includes the Phantom-DB snapshot id, which we need to reproduce verdicts.
+      render: text
+    validations:
+      required: true

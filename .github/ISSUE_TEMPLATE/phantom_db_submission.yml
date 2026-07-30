@@ -1,0 +1,63 @@
+name: Phantom-DB submission
+description: Report a hallucinated, squatted, or malicious package for the public Phantom-DB.
+labels: ["phantom-db"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submissions are verified mechanically by CI bots before merge: the name is
+        re-checked against the live registry and the claimed status must hold.
+        Entries claiming `malicious` require a public evidence URL (vendor writeup,
+        advisory, or news coverage) — we do not take unverifiable malware claims.
+
+        Do not submit unregistered high-frequency hallucinated names you mined
+        yourself: that is an attacker shopping list. See phantom-db/SCHEMA.md,
+        "Responsible disclosure". Only names already discussed in public research
+        belong here.
+  - type: input
+    id: package
+    attributes:
+      label: Package name
+      description: Exact registry name, lowercased.
+      placeholder: huggingface-cli
+    validations:
+      required: true
+  - type: dropdown
+    id: ecosystem
+    attributes:
+      label: Ecosystem
+      options:
+        - pypi
+        - npm
+        - cargo
+        - go
+        - maven
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Claimed status
+      description: phantom = hallucinated, not registered. squatted = registered to capture hallucinations. malicious = confirmed malicious payload (evidence URL mandatory).
+      options:
+        - phantom
+        - squatted
+        - malicious
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Where the hallucination / squat was observed
+      description: Which model, tool, tutorial, or campaign produced or exploited this name. Include the intended target package if known.
+      placeholder: "GPT-x suggests `huggingface-cli` for `huggingface_hub[cli]`; squatted on PyPI 2024-02."
+    validations:
+      required: true
+  - type: input
+    id: evidence
+    attributes:
+      label: Evidence URL
+      description: Public link documenting this entry (research post, advisory, vendor writeup). Required for `malicious`, strongly preferred for everything else.
+      placeholder: https://www.lasso.security/blog/ai-package-hallucinations
+    validations:
+      required: false
