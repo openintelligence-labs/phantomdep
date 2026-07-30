@@ -137,8 +137,8 @@ wheel per target with the right `--plat-name`) rather than on one machine.
 ```sh
 cargo publish -p phantomdep-core --dry-run
 cargo publish -p phantomdep-core
-cargo publish -p phantomdep-cli --dry-run
-cargo publish -p phantomdep-cli              # after core is indexed
+cargo publish -p phantomdep --dry-run
+cargo publish -p phantomdep                  # after core is indexed
 ```
 
 ## 7. Post-release checklist

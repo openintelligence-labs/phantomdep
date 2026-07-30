@@ -24,7 +24,7 @@ Warm verdicts run in tens of microseconds; cold verdicts pay one HTTPS round-tri
 ## Install
 
 ```bash
-cargo install --locked phantomdep-cli
+cargo install --locked phantomdep
 ```
 
 Or download the static binary from [GitHub Releases](https://github.com/openintelligence-labs/phantomdep/releases):

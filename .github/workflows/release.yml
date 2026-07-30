@@ -61,11 +61,11 @@ jobs:
 
       - name: Build (cargo)
         if: matrix.cross != true
-        run: cargo build --release --locked --target ${{ matrix.target }} -p phantomdep-cli
+        run: cargo build --release --locked --target ${{ matrix.target }} -p phantomdep
 
       - name: Build (cross)
         if: matrix.cross == true
-        run: cross build --release --locked --target ${{ matrix.target }} -p phantomdep-cli
+        run: cross build --release --locked --target ${{ matrix.target }} -p phantomdep
 
       - name: Stage assets
         shell: bash
