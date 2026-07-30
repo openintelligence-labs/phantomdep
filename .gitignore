@@ -48,9 +48,10 @@ phantom-db/reports/
 _archive/
 
 # Internal architecture + benchmark docs (kept local until the public docs site is up).
-# docs/RELEASING.md is the exception: the release runbook is tracked.
+# Exceptions: the release runbook and the reproducible benchmark page are tracked.
 docs/*
 !docs/RELEASING.md
+!docs/BENCHMARK.md
 
 # Local-only contributor notes
 *.local.md

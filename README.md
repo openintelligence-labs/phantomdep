@@ -181,15 +181,15 @@ PhantomDep benchmark (100 iterations, warm caches)
 
   scenario                       p50 (μs)   p95 (μs)   max (μs)
   ------------------------------------------------------------
-  real PyPI (cached)                   17         22         39
-  real npm (cached)                     9         12         16
-  phantom PyPI (cached)                30         35         50
-  offline resolve only                 16         18         19
+  real PyPI (cached)                   21         24         53
+  real npm (cached)                    11         14         24
+  phantom PyPI (cached)                38         44         58
+  offline resolve only                 21         24         31
 ```
 
 ![phantomdep replay + benchmark](./assets/demos/replay.gif)
 
-Reproducible: `phantomdep benchmark --iterations 100 --json`. Numbers above are from a release build on Apple Silicon, residential broadband. Cold network verdicts are dominated by the registry HTTPS round-trip (typically 10–30 ms for warm TLS, occasional outliers up to ~350 ms).
+Reproducible: `phantomdep benchmark --iterations 100 --json`. Numbers above are from the v1.0.1 release build on Apple Silicon, residential broadband. Cold network verdicts are dominated by the registry HTTPS round-trip (typically 10–30 ms for warm TLS, occasional outliers up to ~350 ms). Full methodology, real-repo scan timings, and reproduction commands: [docs/BENCHMARK.md](./docs/BENCHMARK.md).
 
 ## Supported ecosystems
 
