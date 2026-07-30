@@ -10,28 +10,28 @@
 class Phantomdep < Formula
   desc "Local-first dependency firewall for AI coding agents"
   homepage "https://github.com/openintelligence-labs/phantomdep"
-  version "1.0.0" # TODO: bump on each release.
+  version "1.0.1"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/openintelligence-labs/phantomdep/releases/download/v#{version}/phantomdep-aarch64-apple-darwin.tar.gz"
-      sha256 "f554f5cd530ba91fdeba733d10af4e3198dead11f6baad22c246d0a2bb0c7842"
+      sha256 "e25fb2b7f38f14fe377fe2a7158f0165eec77a2e4775c622ff691b2ddbe70102"
     end
     on_intel do
       url "https://github.com/openintelligence-labs/phantomdep/releases/download/v#{version}/phantomdep-x86_64-apple-darwin.tar.gz"
-      sha256 "ec77f7f738b0f8dfa1f068c4a20e83e73b3e6dad807f845ba0f78f0c65328ff7"
+      sha256 "367381953855b51ecb7c717ca07e53007682da617829182fedb63ecaada166c2"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/openintelligence-labs/phantomdep/releases/download/v#{version}/phantomdep-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "683f0aa9713295e5033a526aca94eaaf664caee079b262d9db494b783753430a"
+      sha256 "525aca4e4912587bec5301c4efd13a39f11aad9aef4ea1cadcc379704f47e8c7"
     end
     on_intel do
       url "https://github.com/openintelligence-labs/phantomdep/releases/download/v#{version}/phantomdep-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "0c37f2d885540d3ff23cf11262ca3f0150c03fccd7f8604016ceb25c8059bd96"
+      sha256 "eb058e92546ce7ec06d96d98b21bf48f545104e1512da7e38a6c6f72d49acc57"
     end
   end
 

@@ -23,18 +23,22 @@ Warm verdicts run in tens of microseconds; cold verdicts pay one HTTPS round-tri
 
 ## Install
 
+Pick whichever toolchain you already have — all four ship the same static binary:
+
 ```bash
-cargo install --locked phantomdep
+brew install openintelligence-labs/tap/phantomdep   # Homebrew (macOS / Linux)
+npm  install -g phantomdep                          # npm — downloads the binary for your platform
+pip  install phantomdep                             # PyPI — binary ships inside the wheel
+cargo install --locked phantomdep                   # crates.io — builds from source
 ```
 
-Or download the static binary from [GitHub Releases](https://github.com/openintelligence-labs/phantomdep/releases):
+Or download the static binary straight from [GitHub Releases](https://github.com/openintelligence-labs/phantomdep/releases):
 
 ```bash
-curl -sSfL https://github.com/openintelligence-labs/phantomdep/releases/latest/download/phantomdep-$(uname -m)-$(uname -s | tr '[:upper:]' '[:lower:]').tar.gz \
+arch=$(uname -m | sed 's/^arm64$/aarch64/'); os=$([ "$(uname -s)" = Darwin ] && echo apple-darwin || echo unknown-linux-gnu)
+curl -sSfL "https://github.com/openintelligence-labs/phantomdep/releases/latest/download/phantomdep-${arch}-${os}.tar.gz" \
     | tar -xz && sudo install phantomdep /usr/local/bin/
 ```
-
-`brew install`, `npm install -g`, and `pip install` land alongside the v1.0 release.
 
 No Python or Node runtime required, no signup, no telemetry. The binary works offline against a bundled snapshot.
 
