@@ -1,6 +1,6 @@
 {
   "name": "phantomdep",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Local-first dependency firewall for AI coding agents. Catches hallucinated, squatted, and malicious packages before they reach your repo.",
   "homepage": "https://github.com/openintelligence-labs/phantomdep",
   "repository": {
