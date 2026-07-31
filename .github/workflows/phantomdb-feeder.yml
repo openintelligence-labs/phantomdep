@@ -27,9 +27,9 @@ jobs:
   feed:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: "pip"
@@ -52,7 +52,7 @@ jobs:
             --report ../reports/feeder-$(date -u +%Y-%m-%d).json
 
       - name: Open PR with candidates
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           branch: phantomdb/candidates-${{ github.run_id }}
           title: "phantom-db: nightly candidate sweep"
