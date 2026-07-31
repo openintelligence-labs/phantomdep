@@ -56,3 +56,6 @@ docs/*
 # Local-only contributor notes
 *.local.md
 NOTES.md
+
+# Stray uv lockfile — the pipelines are installed with pip (see phantom-db/pipelines/README.md)
+phantom-db/pipelines/uv.lock
