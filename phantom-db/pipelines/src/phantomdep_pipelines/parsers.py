@@ -19,9 +19,7 @@ from collections.abc import Iterable
 # Python-specific patterns
 # ----------------------------------------------------------------------------
 
-PIP_INSTALL_RE = re.compile(
-    r"\bpip(?:3)?\s+install\s+(?P<args>[^\n`]+)", re.IGNORECASE
-)
+PIP_INSTALL_RE = re.compile(r"\bpip(?:3)?\s+install\s+(?P<args>[^\n`]+)", re.IGNORECASE)
 UV_PIP_RE = re.compile(r"\buv\s+pip\s+install\s+(?P<args>[^\n`]+)", re.IGNORECASE)
 UV_ADD_RE = re.compile(r"\buv\s+add\s+(?P<args>[^\n`]+)", re.IGNORECASE)
 POETRY_ADD_RE = re.compile(r"\bpoetry\s+add\s+(?P<args>[^\n`]+)", re.IGNORECASE)
@@ -35,15 +33,66 @@ PY_IMPORT_RE = re.compile(
 
 PYTHON_STDLIB = frozenset(
     {
-        "abc", "argparse", "array", "asyncio", "base64", "collections", "concurrent",
-        "contextlib", "copy", "csv", "dataclasses", "datetime", "decimal", "enum",
-        "functools", "glob", "hashlib", "http", "io", "ipaddress", "itertools",
-        "json", "logging", "math", "multiprocessing", "operator", "os", "pathlib",
-        "pickle", "queue", "random", "re", "secrets", "shutil", "signal", "socket",
-        "sqlite3", "ssl", "statistics", "string", "struct", "subprocess", "sys",
-        "tempfile", "textwrap", "threading", "time", "tomllib", "traceback", "typing",
-        "unittest", "urllib", "uuid", "warnings", "weakref", "xml", "zipfile", "zlib",
-        "__future__", "_thread",
+        "abc",
+        "argparse",
+        "array",
+        "asyncio",
+        "base64",
+        "collections",
+        "concurrent",
+        "contextlib",
+        "copy",
+        "csv",
+        "dataclasses",
+        "datetime",
+        "decimal",
+        "enum",
+        "functools",
+        "glob",
+        "hashlib",
+        "http",
+        "io",
+        "ipaddress",
+        "itertools",
+        "json",
+        "logging",
+        "math",
+        "multiprocessing",
+        "operator",
+        "os",
+        "pathlib",
+        "pickle",
+        "queue",
+        "random",
+        "re",
+        "secrets",
+        "shutil",
+        "signal",
+        "socket",
+        "sqlite3",
+        "ssl",
+        "statistics",
+        "string",
+        "struct",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "textwrap",
+        "threading",
+        "time",
+        "tomllib",
+        "traceback",
+        "typing",
+        "unittest",
+        "urllib",
+        "uuid",
+        "warnings",
+        "weakref",
+        "xml",
+        "zipfile",
+        "zlib",
+        "__future__",
+        "_thread",
     }
 )
 
@@ -161,18 +210,41 @@ NPM_INSTALL_RE = re.compile(
     r"\b(?:npm\s+(?:install|i|add)|pnpm\s+(?:install|i|add)|yarn\s+(?:add|install))\s+(?P<args>[^\n`]+)",
     re.IGNORECASE,
 )
-JS_IMPORT_FROM_RE = re.compile(
-    r"""\bimport\b[^'"`;\n]*?\bfrom\s*['"`]([^'"`\n]+)['"`]"""
-)
+JS_IMPORT_FROM_RE = re.compile(r"""\bimport\b[^'"`;\n]*?\bfrom\s*['"`]([^'"`\n]+)['"`]""")
 JS_SIDE_EFFECT_RE = re.compile(r"""(?m)^\s*import\s*['"`]([^'"`\n]+)['"`]""")
 JS_REQUIRE_RE = re.compile(r"""\brequire\s*\(\s*['"`]([^'"`\n]+)['"`]""")
 
 NODE_BUILTINS = frozenset(
     {
-        "assert", "buffer", "child_process", "cluster", "crypto", "dgram", "dns",
-        "events", "fs", "http", "http2", "https", "net", "os", "path", "process",
-        "querystring", "readline", "stream", "string_decoder", "tls", "tty", "url",
-        "util", "v8", "vm", "wasi", "worker_threads", "zlib",
+        "assert",
+        "buffer",
+        "child_process",
+        "cluster",
+        "crypto",
+        "dgram",
+        "dns",
+        "events",
+        "fs",
+        "http",
+        "http2",
+        "https",
+        "net",
+        "os",
+        "path",
+        "process",
+        "querystring",
+        "readline",
+        "stream",
+        "string_decoder",
+        "tls",
+        "tty",
+        "url",
+        "util",
+        "v8",
+        "vm",
+        "wasi",
+        "worker_threads",
+        "zlib",
     }
 )
 

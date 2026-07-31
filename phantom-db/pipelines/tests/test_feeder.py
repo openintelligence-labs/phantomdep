@@ -1,4 +1,5 @@
 """Dry-run feeder test using the mock provider — no network, no LLM."""
+
 import json
 from pathlib import Path
 from unittest.mock import patch

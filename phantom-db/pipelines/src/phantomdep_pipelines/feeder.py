@@ -63,18 +63,12 @@ async def _run_async(
     db_dir: Path,
 ) -> dict[str, Any]:
     provider = get_provider(provider_name, model)
-    prompts_to_run = [
-        p for p in ALL_PROMPTS if p.language in languages
-    ]
+    prompts_to_run = [p for p in ALL_PROMPTS if p.language in languages]
 
-    responses = await provider.generate(
-        [(p.id, p.text) for p in prompts_to_run]
-    )
+    responses = await provider.generate([(p.id, p.text) for p in prompts_to_run])
 
     # Aggregate: per-ecosystem candidate names + their source prompts.
-    candidates: dict[str, dict[str, list[str]]] = defaultdict(
-        lambda: defaultdict(list)
-    )
+    candidates: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
     for resp in responses:
         prompt = next((p for p in prompts_to_run if p.id == resp.prompt_id), None)
         if prompt is None:

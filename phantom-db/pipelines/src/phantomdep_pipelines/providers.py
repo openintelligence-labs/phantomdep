@@ -104,9 +104,7 @@ class MockProvider:
                 "```bash\npip install ujson super-fast-json-parser\n```\n"
                 "```python\nimport super_fast_json_parser\n```"
             ),
-            "py-async-redis": (
-                "```python\nimport redis\nimport aioredis_typed\n```"
-            ),
+            "py-async-redis": ("```python\nimport redis\nimport aioredis_typed\n```"),
             "py-yaml-safe": "```python\nimport yaml\n```",
             "js-react-codeshift": (
                 "```bash\nnpm install react-codeshift\n```\n"

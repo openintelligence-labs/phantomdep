@@ -23,7 +23,6 @@ def test_python_collapses_underscore_and_hyphen_variants():
     assert pkgs == {"super-fast-json-parser"}
 
 
-
 # ----- Python --------------------------------------------------------------
 
 
